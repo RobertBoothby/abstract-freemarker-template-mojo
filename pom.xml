@@ -1,0 +1,35 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>abstract-freemarker-template-mojo</artifactId>
+    <version>0.1.0-SNAPSHOT</version>
+
+    <packaging>jar</packaging>
+
+    <name>Abstract Freemarker Template Mojo</name>
+    <description>
+        This project contains an Abstract Mojo that provides the foundation for Maven plugins that wish to produce files
+        using Freemarker templates.
+    </description>
+
+    <parent>
+        <groupId>com.robertboothby</groupId>
+        <artifactId>maven-plugin-parent</artifactId>
+        <version>0.1.0-SNAPSHOT</version>
+    </parent>
+
+    <properties>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.freemarker</groupId>
+            <artifactId>freemarker</artifactId>
+            <version>2.3.23</version>
+        </dependency>
+    </dependencies>
+</project>
