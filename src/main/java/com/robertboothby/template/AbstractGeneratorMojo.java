@@ -1,7 +1,7 @@
-package com.robertboothby.codegen;
+package com.robertboothby.template;
 
-import com.robertboothby.codegen.model.GenerationModel;
-import com.robertboothby.codegen.model.GenerationModelRetriever;
+import com.robertboothby.template.model.GenerationModel;
+import com.robertboothby.template.model.GenerationModelRetriever;
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;

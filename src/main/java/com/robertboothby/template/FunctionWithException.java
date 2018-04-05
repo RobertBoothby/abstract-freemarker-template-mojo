@@ -1,4 +1,4 @@
-package com.robertboothby.codegen;
+package com.robertboothby.template;
 
 @FunctionalInterface
 public interface FunctionWithException<T, R, E extends Exception> {

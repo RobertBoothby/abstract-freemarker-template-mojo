@@ -1,4 +1,4 @@
-package com.robertboothby.codegen.model;
+package com.robertboothby.template.model;
 
 import java.util.List;
 

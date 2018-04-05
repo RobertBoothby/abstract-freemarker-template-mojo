@@ -1,4 +1,4 @@
-package com.robertboothby.codegen.model;
+package com.robertboothby.template.model;
 
 /**
  * This class encapsulates the information about generating one output from the generator.

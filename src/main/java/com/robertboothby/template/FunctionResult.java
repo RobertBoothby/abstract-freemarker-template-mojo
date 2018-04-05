@@ -1,6 +1,4 @@
-package com.robertboothby.codegen;
-
-import java.util.function.Function;
+package com.robertboothby.template;
 
 /**
  * This class holds the outcome of the generation.

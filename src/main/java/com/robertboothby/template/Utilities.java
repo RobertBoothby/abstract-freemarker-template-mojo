@@ -1,4 +1,4 @@
-package com.robertboothby.codegen;
+package com.robertboothby.template;
 
 import java.io.IOException;
 import java.io.PrintWriter;
