@@ -1,4 +1,4 @@
-package com.robertboothby.template;
+package com.robertboothby.utilities.lambda;
 
 @FunctionalInterface
 public interface FunctionWithException<T, R, E extends Exception> {

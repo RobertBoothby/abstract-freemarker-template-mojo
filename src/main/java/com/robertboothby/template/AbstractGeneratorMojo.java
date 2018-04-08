@@ -2,6 +2,7 @@ package com.robertboothby.template;
 
 import com.robertboothby.template.model.GenerationModel;
 import com.robertboothby.template.model.GenerationModelRetriever;
+import com.robertboothby.utilities.lambda.FunctionResult;
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.cache.TemplateLoader;
 import freemarker.template.Configuration;
@@ -17,9 +18,10 @@ import java.io.StringWriter;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.robertboothby.utilities.maven.MavenUtilities.getAbsoluteBuildDirectory;
+
 public abstract class AbstractGeneratorMojo
         extends AbstractMojo {
-
 
     /**
      * Root location of the generated files.
@@ -30,12 +32,22 @@ public abstract class AbstractGeneratorMojo
     )
     private File outputDirectory;
 
+    /**
+     * How to treat the output directory, either as a SOURCE root, a TEST_SOURCE root, a RESOURCE root, A TEST_RESOURCE
+     * root or as having a significance of NONE.
+     */
+    @Parameter (
+            defaultValue ="SOURCE",
+            required = true
+    )
+    private OutputDirectoryType outputDirectoryType;
+
     @Parameter(
             defaultValue = "${project}",
             readonly = true,
             required = true
     )
-    private MavenProject project;
+    protected MavenProject project;
 
     private Configuration configuration;
 
@@ -65,17 +77,25 @@ public abstract class AbstractGeneratorMojo
 
     public void execute()
             throws MojoExecutionException {
+        //First normalise the output directory.
+        outputDirectory = getAbsoluteBuildDirectory(this.outputDirectory, this.project);
+
+        //Setup the Freemarker configuration.
         configuration = new Configuration(Configuration.VERSION_2_3_23);
         configuration.setTemplateLoader(getTemplateLoader());
 
-        List<FunctionResult<String>> generationFunctionResults = getGenerationModelRetriever().getGenerationModels()
-                .parallelStream()
-                .map(this::generate).collect(Collectors.toList());
+        //Generate the files.
+        List<FunctionResult<String>> generationFunctionResults =
+                getGenerationModelRetriever()
+                        .getGenerationModels()
+                        .parallelStream()
+                        .map(this::generate)
+                        .collect(Collectors.toList());
 
         //Check for any failures during generation.
         String failureDetails = generationFunctionResults
                 .stream()
-                .filter(FunctionResult::isFailure)
+                .filter(FunctionResult::isExceptional)
                 .map(FunctionResult::toString)
                 .collect(Collectors.joining("\n"));
 
@@ -88,7 +108,7 @@ public abstract class AbstractGeneratorMojo
                 .stream()
                 .map(this::createDirectoryIfNeeded) //Has to be serial as we are creating directories in the filing system.
                 .map(this::writeGenerationResult)
-                .filter(FunctionResult::isFailure)
+                .filter(FunctionResult::isExceptional)
                 .map(FunctionResult::toString)
                 .collect(Collectors.joining("\n"));
 
@@ -96,8 +116,8 @@ public abstract class AbstractGeneratorMojo
             throw new MojoExecutionException("Problems in writing output:\n\n" + failureDetails);
         }
 
-        //Add the generated sources to the source root.
-        project.addCompileSourceRoot(outputDirectory.getAbsolutePath());
+        //Add the output directory to the project as configured.
+        outputDirectoryType.addToProject(this.project, this.outputDirectory);
     }
 
     private FunctionResult<String> createDirectoryIfNeeded(FunctionResult<String> functionResult) {
@@ -120,11 +140,11 @@ public abstract class AbstractGeneratorMojo
     private FunctionResult<String> writeGenerationResult(FunctionResult<String> functionResult) {
         File f = new File(outputDirectory, functionResult.getResultIdentifier());
         try (FileWriter w = new FileWriter(f)) {
-            w.write(functionResult.getResult());
-        } catch (IOException e) {
+            w.write(functionResult.getResult().orElseThrow(() -> new RuntimeException("Processing result that is a failure: " + functionResult.toString())));
+        } catch (Exception e) {
             return new FunctionResult<>(functionResult.getResultIdentifier(), e);
         }
-        // return original esult to signal success and possibly allow further processing in the future.
+        // return original result to signal success and possibly allow further processing in the future.
         return functionResult;
     }
 }
