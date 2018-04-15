@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class LambdaUtilities {
 
@@ -36,6 +37,11 @@ public class LambdaUtilities {
 
     public static <T, U, R, E extends Exception> BiFunction<T, U, FunctionResult<R>> wrap(BiFunctionWithException<T,U,R,E> function){
         return (parameter1, parameter2) -> wrap(parameter1.toString(), () -> function.apply(parameter1, parameter2));
+    }
+
+
+    public static <T> Predicate<T> not(Predicate<T> predicate){
+        return t -> !predicate.test(t);
     }
 
 }
