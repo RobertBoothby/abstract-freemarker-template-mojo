@@ -8,7 +8,7 @@ import java.util.function.BiConsumer;
 
 /**
  * Enumeration based strategy pattern for adding output directories to the Maven project, used as a parameter on the
- * {@link }AbstractGeneratorMojo}.
+ * {@link AbstractGeneratorMojo}.
  */
 public enum OutputDirectoryType {
 
