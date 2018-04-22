@@ -12,26 +12,53 @@ import java.util.function.BiConsumer;
  */
 public enum OutputDirectoryType {
 
+    /*
+     FOUND VERY OBSCURE BUG IN MAVEN0-PLUGIN-PLUGIN where it cannot cope with these as Lambdas.
+     */
     /**
      * Treat the output directory as a source directory
      */
-    SOURCE          ((p, f) -> p.addCompileSourceRoot(f.getAbsolutePath())),
+    SOURCE          (new BiConsumer<MavenProject, File>() {
+        @Override
+        public void accept(MavenProject p, File f) {
+            p.addCompileSourceRoot(f.getAbsolutePath());
+        }
+    }),
     /**
      * Treat the output directory as a test source directory
      */
-    TEST_SOURCE     ((p, f) -> p.addTestCompileSourceRoot(f.getAbsolutePath())),
+    TEST_SOURCE     (new BiConsumer<MavenProject, File>() {
+        @Override
+        public void accept(MavenProject p, File f) {
+            p.addTestCompileSourceRoot(f.getAbsolutePath());
+        }
+    }),
     /**
      * Treat the output directory as a resource directory
      */
-    RESOURCE        ((p, f) -> p.addResource(resourceForDirectory(f))),
+    RESOURCE        (new BiConsumer<MavenProject, File>() {
+        @Override
+        public void accept(MavenProject p, File f) {
+            p.addResource(resourceForDirectory(f));
+        }
+    }),
     /**
      * Treat the output directory as a test resource directory
      */
-    TEST_RESOURCE   ((p, f) -> p.addTestResource(resourceForDirectory(f))),
+    TEST_RESOURCE   (new BiConsumer<MavenProject, File>() {
+        @Override
+        public void accept(MavenProject p, File f) {
+            p.addTestResource(resourceForDirectory(f));
+        }
+    }),
     /**
      * Treat the output directory as having no significance
      */
-    NONE            ((p, f) -> {});
+    NONE            (new BiConsumer<MavenProject, File>() {
+        @Override
+        public void accept(MavenProject p, File f) {
+        }
+    });
 
     private final BiConsumer<MavenProject, File> strategy;
 
