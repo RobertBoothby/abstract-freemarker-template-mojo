@@ -54,6 +54,7 @@ public abstract class AbstractGeneratorMojo
     /**
      * Get the generation model retriever to be used by the Mojo.
      * @return the generation model retriever.
+     * @throws MojoExecutionException if there is a problem creating the MojoExecutionException.
      */
     protected abstract GenerationModelRetriever getGenerationModelRetriever() throws MojoExecutionException;
 
